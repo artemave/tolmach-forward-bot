@@ -1,0 +1,14 @@
+include:
+  - ${HOME}/projects/dotfiles/devcontainer/docker-compose.yml
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Keep the uv-managed virtualenv on a named volume so the Linux-built
+      # .venv isn't shadowed by the bind-mounted host checkout (mirrors the
+      # node_modules volume pattern from everybody-voting2).
+      - venv:/workspace/.venv
+volumes:
+  venv:

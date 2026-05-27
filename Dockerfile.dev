@@ -1,0 +1,7 @@
+# syntax=docker/dockerfile:1.5
+FROM dev-base:latest
+
+WORKDIR /workspace
+
+COPY mise.toml /workspace/mise.toml
+RUN mise trust && mise install
