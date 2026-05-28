@@ -1,0 +1,52 @@
+# Version control & local IDE state
+.git/
+.github/
+.vscode/
+.idea/
+
+# Python / uv build artefacts
+**/__pycache__/
+**/*.py[cod]
+.venv/
+.python-version
+
+# Test, type, and coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local environment files (never bake into an image)
+.env
+.env.*
+!.env.example
+
+# Tests are not needed in the production image
+tests/
+
+# Dev container / tooling files
+Dockerfile.dev
+docker-compose.dev.yml
+mise.toml
+Session.vim
+
+# Deployment config — Kamal reads these from the host, not from inside the image
+.kamal/
+config/
+
+# Editor backups & misc
+*.swp
+*.bak
+
+# Project docs not needed inside the runtime
+justfile
+CLAUDE.md
+tolmach-spec.md

@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-**Greenfield — not yet scaffolded.** The only source of truth is [`tolmach-spec.md`](tolmach-spec.md). No `pyproject.toml`, `bot/`, `tests/`, or `justfile` exist yet. Read the spec before doing anything; it defines the architecture, module layout, tooling, and build milestones in full. The first milestone is to scaffold the project (`uv init`, tooling config, CI) and prove the LLM pipeline end-to-end.
+**MVP implemented (milestones 1–5).** The project is scaffolded and `just check` is green: 100% line+branch coverage, `ruff` (`ALL`) and `mypy --strict` clean. The package lives in `bot/`, tests in `tests/`, with `pyproject.toml`, `justfile`, `uv.lock`, and CI (`.github/workflows/ci.yml`) all in place. Run the bot with `uv run tolmach`.
 
-When the spec and this file disagree, the spec wins — update this file to match.
+Done: the end-to-end LLM pipeline, per-user config + SQLite persistence (`/start`, `/language`, `/level`, `/settings`, `/help`), robust message-type handling with polite no-ops, and "last post" tracking per user. **Not yet done (phase 2):** link/article fetching and the follow-up commands (`/vocab`, `/explain`, `/grammar`).
+
+[`tolmach-spec.md`](tolmach-spec.md) remains the source of truth for architecture and intent. When the spec and this file disagree, the spec wins — update this file to match.
 
 ## What Tolmach is
 
@@ -22,14 +24,14 @@ A Telegram bot (`@tolmach_forward_bot`) that translates any forwarded post or ty
 
 ## Commands
 
-Per the spec, a `justfile` exposes the canonical workflow (these do not exist until scaffolded):
+A `Makefile` exposes the canonical workflow (the spec lists either Makefile or justfile; we use Make for ubiquity). `make` on its own prints the menu.
 
 ```
-just check    # lint + type + test — CI runs this and it MUST be green
-just lint     # ruff check + ruff format --check
-just type     # mypy --strict bot tests
-just test     # pytest with coverage, fails under 100%
-just fix      # ruff check --fix + ruff format
+make check    # lint + type + test — CI runs this and it MUST be green
+make lint     # ruff check + ruff format --check
+make type     # mypy --strict bot tests
+make test     # pytest with coverage, fails under 100%
+make fix      # ruff check --fix + ruff format
 ```
 
 Run a single test: `uv run pytest tests/path/to/test_x.py::test_name`.
@@ -55,3 +57,15 @@ Module layout is specified in full in the spec ("Project layout"). The shape tha
 ## Dev environment
 
 Runs in a devcontainer (`docker-compose.dev.yml` + `Dockerfile.dev`) built on a shared `dev-base` image, with `mise` providing `uv`. The `.venv` lives on a named Docker volume so the Linux-built virtualenv isn't shadowed by the bind-mounted host checkout — don't expect `.venv` to be usable from the host.
+
+## Deployment
+
+Production deploys via **Kamal v2** as a single long-polling worker — no `web` role, no kamal-proxy, no HTTP healthcheck. The shipping bits:
+
+- `Dockerfile` — multi-stage production image (uv install → minimal runtime, non-root, `CMD ["tolmach"]`).
+- `.dockerignore`.
+- `config/deploy.yml` — service / `bot` role / registry / env / volume. Has `REPLACE_ME` placeholders for image name, host, and registry username.
+- `.kamal/secrets` — env-var passthrough template; real values come from the deploying shell, not the repo.
+- SQLite persistence: the `tolmach-data` named Docker volume is mounted at `/data`, and `DATABASE_PATH=/data/tolmach.db` is baked into the image.
+
+Make targets: `make deploy-setup`, `make deploy`, `make deploy-logs`, `make docker-build`.

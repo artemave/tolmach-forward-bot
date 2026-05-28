@@ -1,0 +1,47 @@
+# Kamal v2 deploy config for Tolmach.
+# Reference: https://kamal-deploy.org/
+#
+# Tolmach is a single long-polling worker, not a web service: there is no
+# `web` role, no kamal-proxy, and no HTTP healthcheck.
+
+service: tolmach
+
+# Image name pushed to the registry below. Replace the username.
+image: artemave/tolmach-forward-bot
+
+servers:
+  bot:
+    hosts:
+      - 23.88.36.68
+    options:
+      # Restart on crash. The bot self-heals as long as Docker keeps it up.
+      restart: unless-stopped
+
+builder:
+  arch: amd64
+  # Uncomment to also build for arm64 (e.g. when pushing from an Apple Silicon
+  # box but deploying to amd64 servers, or vice versa):
+  # arch:
+  #   - amd64
+  #   - arm64
+
+registry:
+  # Defaults to Docker Hub. Set `server:` for GHCR / ECR / private registries.
+  server: ghcr.io
+  username: artemave
+  password:
+    # Read the token from the env when running `kamal deploy`.
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  clear:
+    DEEPSEEK_MODEL: deepseek-chat
+    DEEPSEEK_BASE_URL: https://api.deepseek.com
+    DATABASE_PATH: /data/tolmach.db
+  secret:
+    - TELEGRAM_BOT_TOKEN
+    - DEEPSEEK_API_KEY
+
+# Persist the SQLite database across container replacements.
+volumes:
+  - "tolmach-data:/data"

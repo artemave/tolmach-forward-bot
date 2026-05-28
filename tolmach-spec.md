@@ -83,7 +83,7 @@ One LLM call per message. Users self-throttle by only sending what they care abo
 - **Telegram:** `python-telegram-bot` v21+ (async)
 - **LLM SDK:** `openai` (configured with DeepSeek's base URL — `https://api.deepseek.com`)
 - **Storage:** SQLite via `aiosqlite`
-- **Config:** environment variables (`BOT_TOKEN`, `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, `DATABASE_PATH`); `python-dotenv` for local dev
+- **Config:** environment variables (`TELEGRAM_BOT_TOKEN`, `DEEPSEEK_API_KEY`, `DEEPSEEK_MODEL`, `DATABASE_PATH`); `python-dotenv` for local dev
 - **Deployment:** long-polling to start; webhooks later if needed
 
 ## Development tooling
