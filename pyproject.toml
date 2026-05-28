@@ -34,6 +34,14 @@ build-backend = "hatchling.build"
 packages = ["bot"]
 
 # ---------------------------------------------------------------------------
+# uv resolver settings — checked into the repo so local dev and CI resolve
+# under the same constraints. Bump the date when you want to pull in newer
+# upstream releases (and commit the new uv.lock).
+# ---------------------------------------------------------------------------
+[tool.uv]
+exclude-newer = "7 days"
+
+# ---------------------------------------------------------------------------
 # Ruff — linter + formatter, `ALL` ruleset with documented ignores.
 # ---------------------------------------------------------------------------
 [tool.ruff]

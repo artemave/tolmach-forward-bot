@@ -20,8 +20,16 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Sync dependencies (locked)
-        run: uv sync --locked
+      - name: Install dependencies
+        # `--frozen` installs exactly what's in uv.lock — no re-resolve.
+        run: uv sync --frozen
+
+      - name: Check lock satisfies pyproject.toml
+        # `uv lock --check` is the documented compatibility check: it fails iff
+        # `pyproject.toml` has changed in a way that excludes the locked version
+        # of some dependency (the bundler-style "did you forget `uv lock`?" check).
+        # It does NOT fail just because newer upstream versions are available.
+        run: uv lock --check
 
       - name: Lint + type + test
         run: make check
