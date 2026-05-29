@@ -63,7 +63,7 @@ def _make_post_init(settings: Settings) -> PostInit:
         application.bot_data[BOT_DATA_DB] = await Database.connect(settings.database_path)
         application.bot_data[BOT_DATA_TRANSLATOR] = build_translator(settings)
         logger.info(
-            "post-init complete (db=%s model=%s)", settings.database_path, settings.deepseek_model
+            "post-init complete (db=%s model=%s)", settings.database_path, settings.openai_model
         )
 
     return post_init
@@ -116,5 +116,5 @@ def main() -> None:
     )
     application.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, messages.handle_message))
 
-    logger.info("starting bot (model=%s db=%s)", settings.deepseek_model, settings.database_path)
+    logger.info("starting bot (model=%s db=%s)", settings.openai_model, settings.database_path)
     application.run_polling()

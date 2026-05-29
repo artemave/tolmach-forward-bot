@@ -16,7 +16,7 @@ from tests.conftest import make_context, make_update, make_user
 async def test_post_init_opens_db_and_builds_translator() -> None:
     settings = Settings(
         telegram_bot_token="t",
-        deepseek_api_key="k",
+        openai_api_key="k",
         database_path=":memory:",
     )
     post_init = _make_post_init(settings)
@@ -33,7 +33,7 @@ async def test_post_init_opens_db_and_builds_translator() -> None:
 def test_main_builds_application_and_starts_polling(monkeypatch: pytest.MonkeyPatch) -> None:
     settings = Settings(
         telegram_bot_token="123456:ABCDEF",
-        deepseek_api_key="k",
+        openai_api_key="k",
         database_path=":memory:",
     )
     monkeypatch.setattr("bot.main.load_dotenv", lambda: None)

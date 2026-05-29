@@ -112,6 +112,9 @@ def make_context(
     context.bot_data = bot_data
     context.user_data = user_data
     context.error = error
+    # bot.send_chat_action is awaited by the handlers around each LLM call.
+    context.bot = MagicMock()
+    context.bot.send_chat_action = AsyncMock()
     return cast("ContextTypes.DEFAULT_TYPE", context)
 
 

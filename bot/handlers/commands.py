@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from telegram.constants import ChatAction
 from telegram.error import BadRequest
 
 from bot.handlers import NOT_CONFIGURED, get_db, get_translator, set_awaiting_language
@@ -186,6 +187,7 @@ async def _follow_up_command(
 
     translator = get_translator(context)
     method = translator.explain if kind == "explain" else translator.grammar
+    await context.bot.send_chat_action(chat_id=message.chat_id, action=ChatAction.TYPING)
     result = await method(
         text=target,
         target_language=stored.target_language,

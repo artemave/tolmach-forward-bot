@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     )
 
     telegram_bot_token: str
-    deepseek_api_key: str
-    deepseek_model: str = "deepseek-chat"
-    deepseek_base_url: str = "https://api.deepseek.com"
+    openai_api_key: str
+    openai_model: str = "gpt-4o-mini"
+    openai_base_url: str = "https://api.openai.com/v1"
     database_path: str = "tolmach.db"
 
 

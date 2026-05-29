@@ -5,6 +5,8 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from telegram.constants import ChatAction
+
 from bot.handlers import (
     NOT_CONFIGURED,
     consume_awaiting_language,
@@ -57,6 +59,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     translator = get_translator(context)
+    await context.bot.send_chat_action(chat_id=message.chat_id, action=ChatAction.TYPING)
     translation = await translator.translate(
         text=text,
         target_language=stored.target_language,

@@ -87,17 +87,17 @@ async def test_translate_does_not_send_a_system_message() -> None:
     assert sent[0]["role"] == "user"
 
 
-def test_build_translator_wires_deepseek_settings() -> None:
+def test_build_translator_wires_openai_settings() -> None:
     settings = Settings(
         telegram_bot_token="t",
-        deepseek_api_key="secret-key",
-        deepseek_model="deepseek-chat",
-        deepseek_base_url="https://api.deepseek.com",
+        openai_api_key="secret-key",
+        openai_model="gpt-4o-mini",
+        openai_base_url="https://api.openai.com/v1",
     )
 
     translator = build_translator(settings)
 
     assert isinstance(translator, Translator)
-    assert translator._model == "deepseek-chat"
+    assert translator._model == "gpt-4o-mini"
     assert isinstance(translator._client, AsyncOpenAI)
-    assert str(translator._client.base_url).rstrip("/") == "https://api.deepseek.com"
+    assert str(translator._client.base_url).rstrip("/") == "https://api.openai.com/v1"

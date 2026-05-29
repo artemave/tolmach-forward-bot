@@ -14,7 +14,7 @@ Requires [`uv`](https://docs.astral.sh/uv/). Everything runs through `uv`.
 
 ```sh
 uv sync                 # create the venv and install deps from uv.lock
-cp .env.example .env    # then fill in TELEGRAM_BOT_TOKEN and DEEPSEEK_API_KEY
+cp .env.example .env    # then fill in TELEGRAM_BOT_TOKEN and OPENAI_API_KEY
 uv run tolmach          # start long-polling
 ```
 
@@ -24,11 +24,11 @@ All configuration is via environment variables (a local `.env` is loaded automat
 
 | Variable           | Required | Default                     | Purpose                                   |
 | ------------------ | -------- | --------------------------- | ----------------------------------------- |
-| `TELEGRAM_BOT_TOKEN`        | yes      | —                           | Telegram Bot API token from @BotFather    |
-| `DEEPSEEK_API_KEY` | yes      | —                           | DeepSeek API key                          |
-| `DEEPSEEK_MODEL`   | no       | `deepseek-chat`             | Model name passed to the OpenAI SDK       |
-| `DEEPSEEK_BASE_URL`| no       | `https://api.deepseek.com`  | OpenAI-compatible base URL                |
-| `DATABASE_PATH`    | no       | `tolmach.db`                | Path to the SQLite database file          |
+| `TELEGRAM_BOT_TOKEN`| yes      | —                            | Telegram Bot API token from @BotFather    |
+| `OPENAI_API_KEY`    | yes      | —                            | OpenAI API key                            |
+| `OPENAI_MODEL`      | no       | `gpt-4o-mini`                | Model name passed to the OpenAI SDK       |
+| `OPENAI_BASE_URL`   | no       | `https://api.openai.com/v1`  | Override to point at another endpoint     |
+| `DATABASE_PATH`     | no       | `tolmach.db`                 | Path to the SQLite database file          |
 
 ## Bot commands
 
@@ -68,7 +68,7 @@ make audit    # pip-audit against the lockfile
 - **100% coverage**, line *and* branch. No `# pragma: no cover` in `bot/`.
 - **Ruff** with the `ALL` ruleset; every ignore is documented in `pyproject.toml`.
 - **mypy `--strict`** over `bot` and `tests`.
-- **No live network in tests** — the DeepSeek client is faked and SQLite runs in-memory.
+- **No live network in tests** — the OpenAI client is faked and SQLite runs in-memory.
 
 ## Deployment
 
@@ -94,7 +94,7 @@ What ships with the repo:
    ```sh
    export KAMAL_REGISTRY_PASSWORD=...   # registry token (e.g. GHCR PAT)
    export TELEGRAM_BOT_TOKEN=...                 # @tolmach_forward_bot Bot API token
-   export DEEPSEEK_API_KEY=...          # DeepSeek API key
+   export OPENAI_API_KEY=...            # OpenAI API key
    ```
 3. **Provision the host** (installs Docker, pulls the proxy/accessory images,
    logs in to the registry):

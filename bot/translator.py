@@ -82,9 +82,9 @@ class Translator:
 
 
 def build_translator(settings: Settings) -> Translator:
-    """Construct a :class:`Translator` wired to DeepSeek from ``settings``."""
+    """Construct a :class:`Translator` wired to OpenAI from ``settings``."""
     client = AsyncOpenAI(
-        api_key=settings.deepseek_api_key,
-        base_url=settings.deepseek_base_url,
+        api_key=settings.openai_api_key,
+        base_url=settings.openai_base_url,
     )
-    return Translator(client=client, model=settings.deepseek_model)
+    return Translator(client=client, model=settings.openai_model)
