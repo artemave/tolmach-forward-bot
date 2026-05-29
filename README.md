@@ -46,9 +46,8 @@ Anything else you send — plain text, a forwarded post, or media with a caption
 translated. Media without text gets a polite no-op.
 
 **Quote-reply commands**: long-press a message, tap *Reply*, drag the handles to select just
-the part you want, then send `/explain` or `/grammar`. Tolmach answers in the language of
-your last forwarded/typed message (the one you read it *from*), so the reply is always in a
-language you can already read.
+the part you want, then send `/explain` or `/grammar`. Tolmach answers in your configured
+language at your configured CEFR level — same settings as for translations.
 
 ## Development
 

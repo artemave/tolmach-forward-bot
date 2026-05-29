@@ -36,39 +36,23 @@ class Translator:
             ),
         )
 
-    async def explain(
-        self,
-        *,
-        text: str,
-        target_language: str,
-        level: str,
-        reference: str | None,
-    ) -> str:
-        """Explain ``text``; reply is in the language of ``reference`` (or ``target_language``)."""
+    async def explain(self, *, text: str, target_language: str, level: str) -> str:
+        """Explain ``text`` in ``target_language`` at the given CEFR ``level``."""
         return await self._complete(
             build_explain_prompt(
                 target_language=target_language,
                 level=level,
                 text=text,
-                reference=reference,
             ),
         )
 
-    async def grammar(
-        self,
-        *,
-        text: str,
-        target_language: str,
-        level: str,
-        reference: str | None,
-    ) -> str:
-        """Break down ``text``'s grammar; reply in the language of ``reference``."""
+    async def grammar(self, *, text: str, target_language: str, level: str) -> str:
+        """Break down the grammar of ``text`` in ``target_language`` at the given CEFR ``level``."""
         return await self._complete(
             build_grammar_prompt(
                 target_language=target_language,
                 level=level,
                 text=text,
-                reference=reference,
             ),
         )
 

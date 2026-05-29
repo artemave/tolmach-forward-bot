@@ -188,7 +188,6 @@ async def _follow_up_command(
         text=target,
         target_language=stored.target_language,
         level=stored.level,
-        reference=stored.last_original,
     )
     await message.reply_text(result)
     logger.info(
