@@ -6,7 +6,7 @@ Kept in one module so the wording can be iterated on without touching call logic
 TRANSLATION_PROMPT = """Translate the following text into {target_language} at CEFR level {level}.
 Use vocabulary and sentence structures appropriate to that level: simplify complex clauses,
 swap rare words for common ones at lower levels, preserve nuance and idiom at higher levels.
-Output only the translation - no preamble, no explanation, no quotes around it.
+Output only the translation as plain prose - no preamble, no Markdown, no quotes around it.
 
 Text:
 {text}"""
@@ -21,13 +21,15 @@ You MUST respond entirely in {target_language}. Every word of your reply, every 
 every technical or grammatical term, must be in {target_language}.
 If you would normally use a term from another language (such as grammatical category names), \
 use the natural {target_language} equivalent instead.
-Calibrate vocabulary and sentence complexity to CEFR level {level}."""
+Calibrate vocabulary and sentence complexity to CEFR level {level}.
+Write in plain prose only - no Markdown formatting. Do not use asterisks for bold or italics, \
+do not use leading dashes or numbers to make lists, and do not use any headers."""
 
 
 EXPLAIN_PROMPT = """Explain the meaning of the text below.
 For a single word: the main sense, register, and one short example sentence.
 For a phrase or idiom: what it means literally and how it is typically used.
-Output only the explanation - no preamble, no quotes around it.
+Output only the explanation as plain prose - no preamble, no Markdown, no quotes around it.
 
 Write your reply only in {target_language}, at CEFR level {level}.
 
@@ -39,7 +41,7 @@ Text:
 # Seeding those English terms was anchoring the model in English commentary.
 GRAMMAR_PROMPT = """Explain how this text works grammatically. Be concise. Use the natural \
 grammatical vocabulary of {target_language}.
-Output only the explanation - no preamble, no quotes around it.
+Output only the explanation as plain prose - no preamble, no Markdown, no quotes around it.
 
 Write your reply only in {target_language}, at CEFR level {level}.
 
