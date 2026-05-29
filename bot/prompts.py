@@ -39,11 +39,15 @@ Text:
 {text}"""
 
 
-# Note the deliberate absence of an English category list ("tense, mood, voice ...").
-# Seeding those English terms was anchoring the model in English commentary.
-GRAMMAR_PROMPT = """Explain how this text works grammatically. Be concise. Use the natural \
-grammatical vocabulary of {target_language}.
-Output only the explanation - no preamble, no quotes around it.
+# Deliberately avoids the words "grammar"/"grammatical". The training-data prior
+# attached to those English terms is strong enough to drag the answer into
+# English even with the language directive in place. "Walk through how it is
+# put together" describes the same task without the English-academic anchor.
+GRAMMAR_PROMPT = """The user wants to understand how the {target_language} text below is \
+put together.
+Walk them through it: what each word is doing, why it takes the form it does, and anything \
+interesting about how the words fit together.
+Output only your walkthrough - no preamble, no quotes around it.
 Use the Telegram HTML tags <b>...</b> and <i>...</i> sparingly for emphasis; never Markdown.
 
 Write your reply only in {target_language}, at CEFR level {level}.
