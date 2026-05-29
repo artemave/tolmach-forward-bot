@@ -22,14 +22,16 @@ every technical or grammatical term, must be in {target_language}.
 If you would normally use a term from another language (such as grammatical category names), \
 use the natural {target_language} equivalent instead.
 Calibrate vocabulary and sentence complexity to CEFR level {level}.
-Write in plain prose only - no Markdown formatting. Do not use asterisks for bold or italics, \
-do not use leading dashes or numbers to make lists, and do not use any headers."""
+If you want to emphasise a word, wrap it in Telegram HTML tags: <b>bold</b> or <i>italic</i>. \
+Do NOT use Markdown (no asterisks, no underscores, no leading dashes for lists, no headers). \
+Any literal < > & characters in your reply must be written as &lt; &gt; &amp;."""
 
 
 EXPLAIN_PROMPT = """Explain the meaning of the text below.
 For a single word: the main sense, register, and one short example sentence.
 For a phrase or idiom: what it means literally and how it is typically used.
-Output only the explanation as plain prose - no preamble, no Markdown, no quotes around it.
+Output only the explanation - no preamble, no quotes around it.
+Use the Telegram HTML tags <b>...</b> and <i>...</i> sparingly for emphasis; never Markdown.
 
 Write your reply only in {target_language}, at CEFR level {level}.
 
@@ -41,7 +43,8 @@ Text:
 # Seeding those English terms was anchoring the model in English commentary.
 GRAMMAR_PROMPT = """Explain how this text works grammatically. Be concise. Use the natural \
 grammatical vocabulary of {target_language}.
-Output only the explanation as plain prose - no preamble, no Markdown, no quotes around it.
+Output only the explanation - no preamble, no quotes around it.
+Use the Telegram HTML tags <b>...</b> and <i>...</i> sparingly for emphasis; never Markdown.
 
 Write your reply only in {target_language}, at CEFR level {level}.
 

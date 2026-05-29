@@ -5,12 +5,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+from telegram.error import BadRequest
+
 from bot.handlers import NOT_CONFIGURED, get_db, get_translator, set_awaiting_language
 from bot.keyboards import OTHER_LANGUAGE, language_keyboard, level_keyboard
 from bot.text_extraction import extract_command_target
 
 if TYPE_CHECKING:
-    from telegram import Update
+    from telegram import Message, Update
     from telegram.ext import ContextTypes
 
 
@@ -189,7 +191,7 @@ async def _follow_up_command(
         target_language=stored.target_language,
         level=stored.level,
     )
-    await message.reply_text(result)
+    await _reply_html(message, result)
     logger.info(
         "%s: user=%s lang=%s level=%s chars=%d",
         kind,
@@ -198,6 +200,21 @@ async def _follow_up_command(
         stored.level,
         len(target),
     )
+
+
+async def _reply_html(message: Message, text: str) -> None:
+    """Reply with Telegram HTML formatting, falling back to plain text on ``BadRequest``.
+
+    The LLM is asked to emit Telegram-flavoured HTML, but it sometimes produces malformed
+    output (unbalanced tags, stray ``<``/``>``). Telegram rejects such payloads with
+    ``BadRequest`` — when that happens we silently retry as plain text so the user still
+    sees a reply.
+    """
+    try:
+        await message.reply_text(text, parse_mode="HTML")
+    except BadRequest:
+        logger.warning("HTML reply rejected by Telegram; falling back to plain text")
+        await message.reply_text(text)
 
 
 async def explain_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

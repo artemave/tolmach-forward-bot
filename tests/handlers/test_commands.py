@@ -2,6 +2,7 @@ from typing import cast
 from unittest.mock import AsyncMock
 
 from telegram import InlineKeyboardMarkup
+from telegram.error import BadRequest
 
 from bot.db import Database
 from bot.handlers import AWAITING_LANGUAGE_KEY, NOT_CONFIGURED, commands
@@ -285,7 +286,10 @@ async def test_explain_explains_quoted_text_using_last_original_as_reference(
         make_context(database=database, translator=translator),
     )
 
-    cast(AsyncMock, message.reply_text).assert_called_once_with("EXPLAIN-OUTPUT")
+    cast(AsyncMock, message.reply_text).assert_called_once_with(
+        "EXPLAIN-OUTPUT",
+        parse_mode="HTML",
+    )
 
 
 async def test_grammar_breaks_down_grammar_of_quoted_text(database: Database) -> None:
@@ -302,4 +306,30 @@ async def test_grammar_breaks_down_grammar_of_quoted_text(database: Database) ->
         make_context(database=database, translator=translator),
     )
 
-    cast(AsyncMock, message.reply_text).assert_called_once_with("GRAMMAR-OUTPUT")
+    cast(AsyncMock, message.reply_text).assert_called_once_with(
+        "GRAMMAR-OUTPUT",
+        parse_mode="HTML",
+    )
+
+
+async def test_explain_falls_back_to_plain_text_when_html_is_rejected(
+    database: Database,
+) -> None:
+    await database.set_language(1, "Spanish")
+    await database.set_level(1, "B1")
+    inner = make_message(text="Hola mundo")
+    message = make_message(text="/explain", reply_to=inner, quote_text="Hola")
+    # First reply (HTML) raises BadRequest; second reply (plain) succeeds.
+    cast(AsyncMock, message.reply_text).side_effect = [BadRequest("invalid html"), None]
+    update = make_update(message=message, user=make_user())
+    translator = make_translator(content="<broken HTML")
+
+    await commands.explain_command(
+        update,
+        make_context(database=database, translator=translator),
+    )
+
+    reply = cast(AsyncMock, message.reply_text)
+    assert reply.call_count == 2
+    assert reply.call_args_list[0].kwargs == {"parse_mode": "HTML"}
+    assert reply.call_args_list[1].kwargs == {}
