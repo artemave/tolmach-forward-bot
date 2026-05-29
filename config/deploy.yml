@@ -9,10 +9,18 @@ service: tolmach
 # Image name pushed to the registry below. Replace the username.
 image: artemave/tolmach-forward-bot
 
+# We have no `web` role (Tolmach is a long-polling worker), so tell Kamal which
+# role to treat as primary instead.
+primary_role: bot
+
 servers:
   bot:
     hosts:
       - 23.88.36.68
+    # Tolmach has no HTTP server (long-polling worker), so don't put
+    # kamal-proxy in front of it. Otherwise Kamal tries to health-check
+    # the container on port 80 and the boot fails.
+    proxy: false
 
 builder:
   arch: amd64
