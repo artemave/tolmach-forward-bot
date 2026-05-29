@@ -32,16 +32,23 @@ All configuration is via environment variables (a local `.env` is loaded automat
 
 ## Bot commands
 
-| Command     | Description                          |
-| ----------- | ------------------------------------ |
-| `/start`    | Set up your language and level       |
-| `/language` | Change target language               |
-| `/level`    | Change CEFR level (A1–C2)            |
-| `/settings` | Show current configuration           |
-| `/help`     | How to use Tolmach                   |
+| Command     | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `/start`    | Set up your language and level                               |
+| `/language` | Change target language                                       |
+| `/level`    | Change CEFR level (A1–C2)                                    |
+| `/settings` | Show current configuration                                   |
+| `/explain`  | Quote-reply with a word/phrase to get its meaning explained  |
+| `/grammar`  | Quote-reply with a phrase to get a grammar breakdown         |
+| `/help`     | How to use Tolmach                                           |
 
 Anything else you send — plain text, a forwarded post, or media with a caption — comes back
 translated. Media without text gets a polite no-op.
+
+**Quote-reply commands**: long-press a message, tap *Reply*, drag the handles to select just
+the part you want, then send `/explain` or `/grammar`. Tolmach answers in the language of
+your last forwarded/typed message (the one you read it *from*), so the reply is always in a
+language you can already read.
 
 ## Development
 

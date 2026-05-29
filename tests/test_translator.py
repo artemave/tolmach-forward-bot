@@ -36,6 +36,79 @@ async def test_translate_returns_empty_string_when_content_is_none() -> None:
     assert result == ""
 
 
+# --------------------------------------------------------------------------- #
+# explain / grammar
+# --------------------------------------------------------------------------- #
+async def test_explain_with_reference_sends_reference_to_llm() -> None:
+    client = FakeOpenAIClient(content="EXPLANATION")
+    translator = Translator(client=cast("AsyncOpenAI", client), model="m")
+
+    result = await translator.explain(
+        text="misanthrope",
+        target_language="Spanish",
+        level="B1",
+        reference="The article was in English ...",
+    )
+
+    assert result == "EXPLANATION"
+    sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
+    assert "misanthrope" in sent[0]["content"]
+    assert "REFERENCE" in sent[0]["content"]
+    assert "The article was in English" in sent[0]["content"]
+
+
+async def test_explain_without_reference_uses_target_language() -> None:
+    client = FakeOpenAIClient(content="EXPLANATION")
+    translator = Translator(client=cast("AsyncOpenAI", client), model="m")
+
+    result = await translator.explain(
+        text="misanthrope",
+        target_language="Spanish",
+        level="B1",
+        reference=None,
+    )
+
+    assert result == "EXPLANATION"
+    sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
+    assert "Spanish" in sent[0]["content"]
+    assert "REFERENCE" not in sent[0]["content"]
+
+
+async def test_grammar_with_reference_sends_reference_to_llm() -> None:
+    client = FakeOpenAIClient(content="GRAMMAR")
+    translator = Translator(client=cast("AsyncOpenAI", client), model="m")
+
+    result = await translator.grammar(
+        text="parce que tu es",
+        target_language="French",
+        level="B1",
+        reference="J'aime le pain.",
+    )
+
+    assert result == "GRAMMAR"
+    sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
+    assert "parce que tu es" in sent[0]["content"]
+    assert "REFERENCE" in sent[0]["content"]
+    assert "J'aime le pain." in sent[0]["content"]
+
+
+async def test_grammar_without_reference_uses_target_language() -> None:
+    client = FakeOpenAIClient(content="GRAMMAR")
+    translator = Translator(client=cast("AsyncOpenAI", client), model="m")
+
+    result = await translator.grammar(
+        text="parce que tu es",
+        target_language="French",
+        level="C1",
+        reference=None,
+    )
+
+    assert result == "GRAMMAR"
+    sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
+    assert "French" in sent[0]["content"]
+    assert "REFERENCE" not in sent[0]["content"]
+
+
 def test_build_translator_wires_deepseek_settings() -> None:
     settings = Settings(
         telegram_bot_token="t",

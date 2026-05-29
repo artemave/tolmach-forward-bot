@@ -1,4 +1,4 @@
-"""Translation through DeepSeek via the OpenAI-compatible async client."""
+"""Translation, /explain, and /grammar through DeepSeek via the OpenAI async client."""
 
 from __future__ import annotations
 
@@ -6,7 +6,11 @@ from typing import TYPE_CHECKING
 
 from openai import AsyncOpenAI
 
-from bot.prompts import build_translation_prompt
+from bot.prompts import (
+    build_explain_prompt,
+    build_grammar_prompt,
+    build_translation_prompt,
+)
 
 if TYPE_CHECKING:
     from openai.types.chat import ChatCompletionUserMessageParam
@@ -15,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class Translator:
-    """Translate text into a target language at a CEFR level with one LLM call."""
+    """Translate, explain, and grammar-break-down text via a single LLM call each."""
 
     def __init__(self, client: AsyncOpenAI, model: str) -> None:
         """Wrap an OpenAI-compatible async client pinned to a model name."""
@@ -24,11 +28,51 @@ class Translator:
 
     async def translate(self, *, text: str, target_language: str, level: str) -> str:
         """Return ``text`` translated into ``target_language`` at the given CEFR ``level``."""
-        prompt = build_translation_prompt(
-            target_language=target_language,
-            level=level,
-            text=text,
+        return await self._complete(
+            build_translation_prompt(
+                target_language=target_language,
+                level=level,
+                text=text,
+            ),
         )
+
+    async def explain(
+        self,
+        *,
+        text: str,
+        target_language: str,
+        level: str,
+        reference: str | None,
+    ) -> str:
+        """Explain ``text``; reply is in the language of ``reference`` (or ``target_language``)."""
+        return await self._complete(
+            build_explain_prompt(
+                target_language=target_language,
+                level=level,
+                text=text,
+                reference=reference,
+            ),
+        )
+
+    async def grammar(
+        self,
+        *,
+        text: str,
+        target_language: str,
+        level: str,
+        reference: str | None,
+    ) -> str:
+        """Break down ``text``'s grammar; reply in the language of ``reference``."""
+        return await self._complete(
+            build_grammar_prompt(
+                target_language=target_language,
+                level=level,
+                text=text,
+                reference=reference,
+            ),
+        )
+
+    async def _complete(self, prompt: str) -> str:
         messages: list[ChatCompletionUserMessageParam] = [
             {"role": "user", "content": prompt},
         ]

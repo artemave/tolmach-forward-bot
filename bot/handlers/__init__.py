@@ -22,6 +22,10 @@ BOT_DATA_TRANSLATOR = "translator"
 #: ``user_data`` key set while we wait for a free-text language name after "Other".
 AWAITING_LANGUAGE_KEY = "awaiting_language"
 
+#: Shared response used by both the message handler and the follow-up commands
+#: when the user hasn't picked a language and level yet.
+NOT_CONFIGURED = "Send /start first to choose your language and level."
+
 
 def get_db(context: ContextTypes.DEFAULT_TYPE) -> Database:
     """Return the :class:`~bot.db.Database` stored on the application."""

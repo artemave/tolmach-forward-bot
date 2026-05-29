@@ -5,7 +5,12 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from bot.handlers import consume_awaiting_language, get_db, get_translator
+from bot.handlers import (
+    NOT_CONFIGURED,
+    consume_awaiting_language,
+    get_db,
+    get_translator,
+)
 from bot.handlers.commands import LANGUAGE_SET_TEMPLATE
 from bot.keyboards import level_keyboard
 from bot.text_extraction import extract_text
@@ -17,8 +22,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 NOTHING_TO_TRANSLATE = "Nothing to translate in this message."
-
-NOT_CONFIGURED = "Send /start first to choose your language and level."
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

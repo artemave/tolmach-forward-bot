@@ -5,12 +5,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from bot.handlers import get_db, set_awaiting_language
+from bot.handlers import NOT_CONFIGURED, get_db, get_translator, set_awaiting_language
 from bot.keyboards import OTHER_LANGUAGE, language_keyboard, level_keyboard
+from bot.text_extraction import extract_command_target
 
 if TYPE_CHECKING:
     from telegram import Update
     from telegram.ext import ContextTypes
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +48,25 @@ How to use it:
 - Forward any channel post, or just type/paste some text.
 - Tolmach replies with the translation, adjusted to your CEFR level.
 
+Want a closer look at a specific word or phrase from a translation?
+Long-press the message, tap Reply, drag the handles to select just that part,
+then send /explain or /grammar.
+
 Commands:
 - /start - set up your language and level
 - /language - change the target language
 - /level - change the CEFR level (A1-C2)
 - /settings - show your current configuration
+- /explain - explain a quoted word or phrase
+- /grammar - break down the grammar of a quoted phrase
 - /help - show this message
 
 Media without any text gets a polite "nothing to translate" reply."""
+
+NEEDS_QUOTE_REPLY = (
+    "Quote-reply to a message first: long-press it, tap Reply, drag to select the "
+    "part you want, then send /explain or /grammar again."
+)
 
 
 async def start(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -140,3 +153,59 @@ async def level_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await get_db(context).set_level(query.from_user.id, value)
     logger.info("level set: user=%s level=%s", query.from_user.id, value)
     await query.edit_message_text(LEVEL_SET_TEMPLATE.format(level=value))
+
+
+# --------------------------------------------------------------------------- #
+# /explain and /grammar — follow-up commands operating on a quoted selection.
+# --------------------------------------------------------------------------- #
+async def _follow_up_command(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE,
+    *,
+    kind: str,
+) -> None:
+    """Shared shape for ``/explain`` and ``/grammar``: read the quote, call the LLM, reply."""
+    message = update.effective_message
+    user = update.effective_user
+    if message is None:
+        return
+    if user is None:
+        return
+
+    target = extract_command_target(message)
+    if target is None:
+        await message.reply_text(NEEDS_QUOTE_REPLY)
+        return
+
+    stored = await get_db(context).get_user(user.id)
+    if stored is None or stored.target_language is None or stored.level is None:
+        await message.reply_text(NOT_CONFIGURED)
+        return
+
+    translator = get_translator(context)
+    method = translator.explain if kind == "explain" else translator.grammar
+    result = await method(
+        text=target,
+        target_language=stored.target_language,
+        level=stored.level,
+        reference=stored.last_original,
+    )
+    await message.reply_text(result)
+    logger.info(
+        "%s: user=%s lang=%s level=%s chars=%d",
+        kind,
+        user.id,
+        stored.target_language,
+        stored.level,
+        len(target),
+    )
+
+
+async def explain_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Explain the quoted (or replied-to) text in the user's reading language."""
+    await _follow_up_command(update, context, kind="explain")
+
+
+async def grammar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Break down the grammar of the quoted (or replied-to) text."""
+    await _follow_up_command(update, context, kind="grammar")

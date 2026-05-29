@@ -105,6 +105,8 @@ def main() -> None:
     application.add_handler(CommandHandler("language", commands.language_command))
     application.add_handler(CommandHandler("level", commands.level_command))
     application.add_handler(CommandHandler("settings", commands.settings_command))
+    application.add_handler(CommandHandler("explain", commands.explain_command))
+    application.add_handler(CommandHandler("grammar", commands.grammar_command))
     application.add_handler(CommandHandler("help", commands.help_command))
     application.add_handler(
         CallbackQueryHandler(commands.language_callback, pattern=f"^{LANGUAGE_CALLBACK_PREFIX}:"),

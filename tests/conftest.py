@@ -8,7 +8,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest_asyncio
 from openai import AsyncOpenAI
-from telegram import CallbackQuery, Message, Update, User
+from telegram import CallbackQuery, Message, TextQuote, Update, User
 from telegram.ext import CallbackContext, ContextTypes
 
 from bot.db import Database
@@ -56,10 +56,23 @@ def make_user(user_id: int = 1) -> User:
     return User(id=user_id, is_bot=False, first_name="Tester")
 
 
-def make_message(*, text: str | None = None, caption: str | None = None) -> Message:
+def make_message(
+    *,
+    text: str | None = None,
+    caption: str | None = None,
+    reply_to: Message | None = None,
+    quote_text: str | None = None,
+) -> Message:
     message = AsyncMock(spec=Message)
     message.text = text
     message.caption = caption
+    message.reply_to_message = reply_to
+    if quote_text is None:
+        message.quote = None
+    else:
+        quote = MagicMock(spec=TextQuote)
+        quote.text = quote_text
+        message.quote = quote
     return cast("Message", message)
 
 

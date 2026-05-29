@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 from telegram import InlineKeyboardMarkup
 
 from bot.db import Database
-from bot.handlers import AWAITING_LANGUAGE_KEY, messages
+from bot.handlers import AWAITING_LANGUAGE_KEY, NOT_CONFIGURED, messages
 from tests.conftest import (
     make_context,
     make_message,
@@ -59,7 +59,7 @@ async def test_prompts_setup_when_no_user_row(database: Database) -> None:
 
     await messages.handle_message(update, context)
 
-    cast(AsyncMock, message.reply_text).assert_called_once_with(messages.NOT_CONFIGURED)
+    cast(AsyncMock, message.reply_text).assert_called_once_with(NOT_CONFIGURED)
 
 
 async def test_prompts_setup_when_only_level_set(database: Database) -> None:
@@ -70,7 +70,7 @@ async def test_prompts_setup_when_only_level_set(database: Database) -> None:
 
     await messages.handle_message(update, context)
 
-    cast(AsyncMock, message.reply_text).assert_called_once_with(messages.NOT_CONFIGURED)
+    cast(AsyncMock, message.reply_text).assert_called_once_with(NOT_CONFIGURED)
 
 
 async def test_prompts_setup_when_only_language_set(database: Database) -> None:
@@ -81,7 +81,7 @@ async def test_prompts_setup_when_only_language_set(database: Database) -> None:
 
     await messages.handle_message(update, context)
 
-    cast(AsyncMock, message.reply_text).assert_called_once_with(messages.NOT_CONFIGURED)
+    cast(AsyncMock, message.reply_text).assert_called_once_with(NOT_CONFIGURED)
 
 
 async def test_translates_and_stores_last_post(database: Database) -> None:
