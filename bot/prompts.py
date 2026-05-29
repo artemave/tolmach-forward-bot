@@ -12,8 +12,10 @@ Text:
 {text}"""
 
 
-EXPLAIN_PROMPT = """Explain the meaning of the following text in {target_language} \
-at CEFR level {level}.
+EXPLAIN_PROMPT = """Write your entire reply in {target_language} at CEFR level {level}.
+Do not use English in the reply unless the target language is English.
+
+Explain the meaning of the text shown below.
 For a single word, cover the main sense, register, and one short example of use.
 For a phrase or idiom, cover what it means literally and how it is typically used.
 Output only the explanation - no preamble, no quotes around it.
@@ -22,9 +24,11 @@ Text:
 {text}"""
 
 
-GRAMMAR_PROMPT = """Explain the grammar of the following text in {target_language} \
-at CEFR level {level}.
-Identify the tense, mood, voice, agreement, word order, and any notable constructions. Be concise.
+GRAMMAR_PROMPT = """Write your entire reply in {target_language} at CEFR level {level}.
+Do not use English in the reply unless the target language is English.
+
+Explain the grammar of the text shown below. Cover tense, mood, voice, agreement, word order,
+and any notable constructions. Be concise.
 Output only the explanation - no preamble, no quotes around it.
 
 Text:
