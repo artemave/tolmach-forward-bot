@@ -13,9 +13,6 @@ servers:
   bot:
     hosts:
       - 23.88.36.68
-    options:
-      # Restart on crash. The bot self-heals as long as Docker keeps it up.
-      restart: unless-stopped
 
 builder:
   arch: amd64
