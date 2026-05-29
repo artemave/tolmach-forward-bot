@@ -2,6 +2,7 @@ from bot.prompts import (
     TRANSLATION_PROMPT,
     build_explain_prompt,
     build_grammar_prompt,
+    build_language_system_message,
     build_translation_prompt,
 )
 
@@ -37,3 +38,11 @@ def test_build_grammar_prompt_includes_all_inputs() -> None:
     assert "French" in result
     assert "B2" in result
     assert "parce que tu es" in result
+
+
+def test_build_language_system_message_pins_target_language_and_level() -> None:
+    result = build_language_system_message(target_language="Russian", level="B1")
+    assert "Russian" in result
+    assert "B1" in result
+    # Should not single out English (bot users aren't all English speakers).
+    assert "English" not in result

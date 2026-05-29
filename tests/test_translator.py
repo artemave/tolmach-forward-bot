@@ -39,7 +39,7 @@ async def test_translate_returns_empty_string_when_content_is_none() -> None:
 # --------------------------------------------------------------------------- #
 # explain / grammar
 # --------------------------------------------------------------------------- #
-async def test_explain_sends_prompt_and_returns_stripped_content() -> None:
+async def test_explain_sends_language_system_message_and_returns_stripped_content() -> None:
     client = FakeOpenAIClient(content="  EXPLANATION  ")
     translator = Translator(client=cast("AsyncOpenAI", client), model="m")
 
@@ -51,11 +51,14 @@ async def test_explain_sends_prompt_and_returns_stripped_content() -> None:
 
     assert result == "EXPLANATION"
     sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
-    assert "misanthrope" in sent[0]["content"]
+    assert sent[0]["role"] == "system"
     assert "Spanish" in sent[0]["content"]
+    assert sent[1]["role"] == "user"
+    assert "misanthrope" in sent[1]["content"]
+    assert "Spanish" in sent[1]["content"]
 
 
-async def test_grammar_sends_prompt_and_returns_stripped_content() -> None:
+async def test_grammar_sends_language_system_message_and_returns_stripped_content() -> None:
     client = FakeOpenAIClient(content="GRAMMAR")
     translator = Translator(client=cast("AsyncOpenAI", client), model="m")
 
@@ -67,8 +70,21 @@ async def test_grammar_sends_prompt_and_returns_stripped_content() -> None:
 
     assert result == "GRAMMAR"
     sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
-    assert "parce que tu es" in sent[0]["content"]
+    assert sent[0]["role"] == "system"
     assert "French" in sent[0]["content"]
+    assert sent[1]["role"] == "user"
+    assert "parce que tu es" in sent[1]["content"]
+
+
+async def test_translate_does_not_send_a_system_message() -> None:
+    client = FakeOpenAIClient(content="Hola")
+    translator = Translator(client=cast("AsyncOpenAI", client), model="m")
+
+    await translator.translate(text="Hello", target_language="Spanish", level="B1")
+
+    sent = cast("list[dict[str, str]]", client.completions.calls[0]["messages"])
+    assert len(sent) == 1
+    assert sent[0]["role"] == "user"
 
 
 def test_build_translator_wires_deepseek_settings() -> None:

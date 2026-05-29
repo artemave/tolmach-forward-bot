@@ -9,11 +9,12 @@ from openai import AsyncOpenAI
 from bot.prompts import (
     build_explain_prompt,
     build_grammar_prompt,
+    build_language_system_message,
     build_translation_prompt,
 )
 
 if TYPE_CHECKING:
-    from openai.types.chat import ChatCompletionUserMessageParam
+    from openai.types.chat import ChatCompletionMessageParam
 
     from bot.config import Settings
 
@@ -29,7 +30,8 @@ class Translator:
     async def translate(self, *, text: str, target_language: str, level: str) -> str:
         """Return ``text`` translated into ``target_language`` at the given CEFR ``level``."""
         return await self._complete(
-            build_translation_prompt(
+            system=None,
+            prompt=build_translation_prompt(
                 target_language=target_language,
                 level=level,
                 text=text,
@@ -39,7 +41,11 @@ class Translator:
     async def explain(self, *, text: str, target_language: str, level: str) -> str:
         """Explain ``text`` in ``target_language`` at the given CEFR ``level``."""
         return await self._complete(
-            build_explain_prompt(
+            system=build_language_system_message(
+                target_language=target_language,
+                level=level,
+            ),
+            prompt=build_explain_prompt(
                 target_language=target_language,
                 level=level,
                 text=text,
@@ -49,17 +55,22 @@ class Translator:
     async def grammar(self, *, text: str, target_language: str, level: str) -> str:
         """Break down the grammar of ``text`` in ``target_language`` at the given CEFR ``level``."""
         return await self._complete(
-            build_grammar_prompt(
+            system=build_language_system_message(
+                target_language=target_language,
+                level=level,
+            ),
+            prompt=build_grammar_prompt(
                 target_language=target_language,
                 level=level,
                 text=text,
             ),
         )
 
-    async def _complete(self, prompt: str) -> str:
-        messages: list[ChatCompletionUserMessageParam] = [
-            {"role": "user", "content": prompt},
-        ]
+    async def _complete(self, *, system: str | None, prompt: str) -> str:
+        messages: list[ChatCompletionMessageParam] = []
+        if system is not None:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
         response = await self._client.chat.completions.create(
             model=self._model,
             messages=messages,
