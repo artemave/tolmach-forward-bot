@@ -5,9 +5,6 @@ any forwarded post or typed message into your chosen language at your chosen CEF
 (A1–C2). Configure your target language and level once with `/language` and `/level`, then
 just forward and read.
 
-Tolmach is a **translator, not a study tool**: text in, translation out, one LLM call per
-message.
-
 ## Quick start
 
 Requires [`uv`](https://docs.astral.sh/uv/). Everything runs through `uv`.
