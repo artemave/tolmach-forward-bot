@@ -1,4 +1,4 @@
-# Tolmach
+# Tolmach F
 
 A Telegram bot ([`@tolmach_forward_bot`](https://t.me/tolmach_forward_bot)) that translates
 any forwarded post or typed message into your chosen language at your chosen CEFR level
